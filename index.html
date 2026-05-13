@@ -117,8 +117,29 @@ font-size:15px;
 display:grid;
 grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
 gap:12px;
+
+/* Scroll للأصناف */
+
+overflow-y:auto;
+max-height:calc(100vh - 220px);
+
+padding-right:5px;
+}
+  .products-grid::-webkit-scrollbar,
+#invoiceItems::-webkit-scrollbar{
+width:8px;
 }
 
+.products-grid::-webkit-scrollbar-thumb,
+#invoiceItems::-webkit-scrollbar-thumb{
+background:#ffeb3b;
+border-radius:10px;
+}
+
+.products-grid::-webkit-scrollbar-track,
+#invoiceItems::-webkit-scrollbar-track{
+background:rgba(255,255,255,.15);
+}
 .product-btn{
 background:#e5e5e5;
 border:none;
