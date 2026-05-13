@@ -1,3 +1,408 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>برنامج الكاشير</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Cairo',sans-serif;
+background:#1f1f1f;
+overflow:hidden;
+}
+
+.header{
+height:70px;
+background:#111827;
+color:#fff;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:28px;
+font-weight:bold;
+position:relative;
+}
+
+.settings-btn{
+position:absolute;
+left:20px;
+background:#0d6efd;
+border:none;
+color:#fff;
+padding:10px 16px;
+border-radius:12px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.container{
+display:grid;
+grid-template-columns:1fr 420px;
+height:calc(100vh - 70px);
+}
+
+.products-section{
+background:#2e3192;
+padding:15px;
+overflow:auto;
+}
+
+.invoice-section{
+background:#0277bd;
+padding:15px;
+overflow:auto;
+}
+
+.section-title{
+color:#fff;
+font-size:22px;
+margin-bottom:10px;
+font-weight:bold;
+}
+
+.search-box{
+width:100%;
+padding:14px;
+border:none;
+border-radius:12px;
+margin-bottom:15px;
+font-size:16px;
+}
+
+.category-bar{
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+margin-bottom:15px;
+}
+
+.category-btn{
+background:#6f2c91;
+border:2px solid #8f5cff;
+color:#fff;
+padding:12px 18px;
+border-radius:8px;
+cursor:pointer;
+font-weight:bold;
+font-size:15px;
+}
+
+.products-grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+gap:12px;
+}
+
+.product-btn{
+background:#e5e5e5;
+border:none;
+border-radius:6px;
+padding:16px;
+cursor:pointer;
+font-weight:bold;
+font-size:18px;
+min-height:90px;
+color:#111;
+transition:.2s;
+}
+
+.product-btn:hover{
+transform:scale(1.03);
+background:#fff;
+}
+
+.product-price{
+display:block;
+margin-top:8px;
+color:#d00000;
+font-size:16px;
+}
+
+.invoice-header{
+display:grid;
+grid-template-columns:80px 1fr 70px 80px 40px;
+gap:8px;
+background:#01579b;
+padding:10px;
+border-radius:8px;
+color:#ffeb3b;
+font-weight:bold;
+font-size:18px;
+margin-bottom:10px;
+}
+
+.invoice-item{
+display:grid;
+grid-template-columns:80px 1fr 70px 80px 40px;
+gap:8px;
+align-items:center;
+background:#0288d1;
+padding:10px;
+border-bottom:1px solid rgba(255,255,255,.2);
+color:#ffeb3b;
+font-weight:bold;
+font-size:18px;
+}
+
+.qty-box{
+display:flex;
+align-items:center;
+gap:5px;
+}
+
+.qty-btn{
+background:#43a047;
+border:none;
+color:#fff;
+width:28px;
+height:28px;
+border-radius:6px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.remove-btn{
+background:#d50000;
+border:none;
+color:#fff;
+padding:6px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.summary{
+background:#01579b;
+padding:15px;
+border-radius:12px;
+margin-top:15px;
+color:#fff;
+}
+
+.summary-row{
+display:flex;
+justify-content:space-between;
+margin-bottom:12px;
+font-size:18px;
+}
+
+.total{
+font-size:30px;
+font-weight:bold;
+color:#ffeb3b;
+}
+
+.action-btn{
+width:100%;
+border:none;
+padding:16px;
+margin-top:12px;
+border-radius:12px;
+font-size:18px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.print-btn{
+background:#00c853;
+color:#fff;
+}
+
+.clear-btn{
+background:#d50000;
+color:#fff;
+}
+
+#settingsPanel{
+position:fixed;
+top:0;
+left:-420px;
+width:420px;
+height:100%;
+background:#fff;
+z-index:999;
+overflow:auto;
+padding:20px;
+transition:.4s;
+}
+
+#settingsPanel.active{
+left:0;
+}
+
+.manage-item{
+background:#f1f5f9;
+padding:12px;
+border-radius:10px;
+margin-bottom:10px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.control-btn{
+border:none;
+padding:8px 12px;
+border-radius:8px;
+cursor:pointer;
+color:#fff;
+}
+
+.edit-btn{
+background:#f59e0b;
+}
+
+.delete-btn{
+background:#ef4444;
+}
+
+input,select{
+width:100%;
+padding:12px;
+border:1px solid #ccc;
+border-radius:10px;
+margin-bottom:10px;
+}
+
+@media(max-width:900px){
+
+.container{
+grid-template-columns:1fr;
+}
+
+.invoice-section{
+height:45vh;
+}
+
+.products-section{
+height:55vh;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+
+برنامج الكاشير
+
+<button class="settings-btn" onclick="toggleSettings()">
+⚙ الإعدادات
+</button>
+
+</div>
+
+<div id="settingsPanel">
+
+<h2 style="margin-bottom:20px">الإعدادات</h2>
+
+<h3>إضافة قسم</h3>
+
+<input type="text" id="newCategoryName" placeholder="اسم القسم">
+
+<button class="action-btn print-btn" onclick="addCategory()">
+إضافة القسم
+</button>
+
+<hr style="margin:20px 0">
+
+<h3>إضافة صنف</h3>
+
+<input type="text" id="newName" placeholder="اسم الصنف">
+
+<input type="number" id="newPrice" placeholder="السعر">
+
+<select id="newCategory"></select>
+
+<button class="action-btn print-btn" onclick="addNewProduct()">
+إضافة الصنف
+</button>
+
+<hr style="margin:20px 0">
+
+<div id="productsManagement"></div>
+
+</div>
+
+<div class="container">
+
+<div class="products-section">
+
+<input type="text" id="searchInput" class="search-box" placeholder="بحث عن صنف">
+
+<div class="category-bar" id="categoryButtons"></div>
+
+<div class="products-grid" id="productsGrid"></div>
+
+</div>
+
+<div class="invoice-section">
+
+<div style="color:#fff;font-size:24px;font-weight:bold;margin-bottom:10px">
+فاتورة رقم :
+<span id="invoiceNumber">1</span>
+</div>
+
+<div class="invoice-header">
+
+<div>الإجمالي</div>
+<div>اسم الصنف</div>
+<div>السعر</div>
+<div>الكمية</div>
+<div></div>
+
+</div>
+
+<div id="invoiceItems"></div>
+
+<div class="summary">
+
+<div class="summary-row">
+<span>عدد الأصناف</span>
+<span id="itemsCount">0</span>
+</div>
+
+<div class="summary-row">
+<span>الخصم %</span>
+<input type="number" id="discountInput" value="0" min="0" max="100" style="width:100px" oninput="updateInvoice()">
+</div>
+
+<div class="summary-row">
+<span>الديليفري</span>
+<input type="number" id="deliveryInput" value="0" min="0" style="width:100px" oninput="updateInvoice()">
+</div>
+
+<div class="summary-row">
+<span>الإجمالي</span>
+<span class="total" id="totalPrice">0</span>
+</div>
+
+</div>
+
+<button class="action-btn print-btn" onclick="printInvoice()">
+طباعة الفاتورة
+</button>
+
+<button class="action-btn clear-btn" onclick="clearInvoice()">
+مسح الفاتورة
+</button>
+
+</div>
+
+</div>
+
 <script>
 
 let categories=[
@@ -21,17 +426,7 @@ let products=[
 ];
 
 let cart=[];
-
-/* =========================
-   رقم الفاتورة المحفوظ
-========================= */
-
-let invoiceNumber =
-Number(localStorage.getItem('invoiceNumber')) || 1;
-
-document.getElementById('invoiceNumber').innerText =
-invoiceNumber;
-
+let invoiceNumber=1;
 let lastItemNumber=0;
 
 const productsGrid=document.getElementById('productsGrid');
@@ -39,15 +434,13 @@ const invoiceItems=document.getElementById('invoiceItems');
 
 function toggleSettings(){
 
-document.getElementById('settingsPanel')
-.classList.toggle('active');
+document.getElementById('settingsPanel').classList.toggle('active');
 
 }
 
 function renderCategories(){
 
-const categoryButtons=
-document.getElementById('categoryButtons');
+const categoryButtons=document.getElementById('categoryButtons');
 
 categoryButtons.innerHTML='';
 
@@ -110,15 +503,10 @@ const btn=document.createElement('button');
 btn.className='product-btn';
 
 btn.innerHTML=`
-
 ${product.name}
-
 <span class='product-price'>
-
 ${product.price} جنيه
-
 </span>
-
 `;
 
 btn.onclick=()=>addToCart(product.id);
@@ -133,8 +521,7 @@ renderProductsManagement();
 
 function renderProductsManagement(){
 
-const container=
-document.getElementById('productsManagement');
+const container=document.getElementById('productsManagement');
 
 container.innerHTML='';
 
@@ -147,29 +534,19 @@ div.className='manage-item';
 div.innerHTML=`
 
 <div>
-
 <strong>${product.name}</strong>
-
 <br>
-
 ${product.price} جنيه
-
 </div>
 
 <div style='display:flex;gap:5px'>
 
-<button class='control-btn edit-btn'
-onclick='editProduct(${product.id})'>
-
+<button class='control-btn edit-btn' onclick='editProduct(${product.id})'>
 تعديل
-
 </button>
 
-<button class='control-btn delete-btn'
-onclick='deleteProduct(${product.id})'>
-
+<button class='control-btn delete-btn' onclick='deleteProduct(${product.id})'>
 حذف
-
 </button>
 
 </div>
@@ -184,9 +561,7 @@ container.appendChild(div);
 
 function addCategory(){
 
-const value=
-document.getElementById('newCategoryName')
-.value.trim();
+const value=document.getElementById('newCategoryName').value.trim();
 
 if(!value)return;
 
@@ -200,31 +575,22 @@ renderCategories();
 
 function addNewProduct(){
 
-const name=
-document.getElementById('newName').value.trim();
+const name=document.getElementById('newName').value.trim();
 
-const price=
-Number(document.getElementById('newPrice').value);
+const price=Number(document.getElementById('newPrice').value);
 
-const category=
-document.getElementById('newCategory').value;
+const category=document.getElementById('newCategory').value;
 
 if(!name || !price)return;
 
 products.push({
-
 id:Date.now(),
-
 name,
-
 price,
-
 category
-
 });
 
 document.getElementById('newName').value='';
-
 document.getElementById('newPrice').value='';
 
 renderProducts();
@@ -265,11 +631,7 @@ updateInvoice();
 
 function filterCategory(category){
 
-renderProducts(
-
-products.filter(p=>p.category===category)
-
-);
+renderProducts(products.filter(p=>p.category===category));
 
 }
 
@@ -288,13 +650,9 @@ const product=products.find(p=>p.id===id);
 lastItemNumber++;
 
 cart.push({
-
 ...product,
-
 qty:1,
-
 lineNumber:lastItemNumber
-
 });
 
 }
@@ -367,29 +725,20 @@ div.innerHTML=`
 
 <div class='qty-box'>
 
-<button class='qty-btn'
-onclick='increaseQty(${item.id})'>
-
+<button class='qty-btn' onclick='increaseQty(${item.id})'>
 +
-
 </button>
 
 ${item.qty}
 
-<button class='qty-btn'
-onclick='decreaseQty(${item.id})'>
-
+<button class='qty-btn' onclick='decreaseQty(${item.id})'>
 -
-
 </button>
 
 </div>
 
-<button class='remove-btn'
-onclick='removeItem(${item.id})'>
-
+<button class='remove-btn' onclick='removeItem(${item.id})'>
 X
-
 </button>
 
 `;
@@ -398,16 +747,13 @@ invoiceItems.appendChild(div);
 
 });
 
-const discount=
-Number(document.getElementById('discountInput').value)||0;
+const discount=Number(document.getElementById('discountInput').value)||0;
 
-const delivery=
-Number(document.getElementById('deliveryInput').value)||0;
+const delivery=Number(document.getElementById('deliveryInput').value)||0;
 
 const discountValue=total*(discount/100);
 
-const finalTotal=
-total-discountValue+delivery;
+const finalTotal=total-discountValue+delivery;
 
 document.getElementById('itemsCount').innerText=count;
 
@@ -438,11 +784,9 @@ return;
 
 }
 
-const discount=
-Number(document.getElementById('discountInput').value)||0;
+const discount=Number(document.getElementById('discountInput').value)||0;
 
-const delivery=
-Number(document.getElementById('deliveryInput').value)||0;
+const delivery=Number(document.getElementById('deliveryInput').value)||0;
 
 let subtotal=0;
 
@@ -454,8 +798,7 @@ subtotal += item.price * item.qty;
 
 const discountValue=subtotal*(discount/100);
 
-const finalTotal=
-subtotal-discountValue+delivery;
+const finalTotal=subtotal-discountValue+delivery;
 
 let itemsHTML='';
 
@@ -487,8 +830,7 @@ const time=now.toLocaleTimeString('ar-EG');
 
 const qrText=`فاتورة رقم ${invoiceNumber}`;
 
-const printWindow=
-window.open('','','width=400,height=700');
+const printWindow=window.open('','','width=400,height=700');
 
 printWindow.document.write(`
 
@@ -606,8 +948,11 @@ BARON
 <tr>
 
 <th>الصنف</th>
+
 <th>الكمية</th>
+
 <th>السعر</th>
+
 <th>الإجمالي</th>
 
 </tr>
@@ -659,9 +1004,7 @@ ${itemsHTML}
 <div class="footer">
 
 خدمة التوصيل
-
 <br>
-
 01070004717
 
 </div>
@@ -674,46 +1017,21 @@ ${itemsHTML}
 
 printWindow.document.close();
 
-/* =========================
-   زيادة رقم الفاتورة
-========================= */
-
 invoiceNumber++;
 
-localStorage.setItem(
-'invoiceNumber',
-invoiceNumber
-);
-
-document.getElementById('invoiceNumber')
-.innerText=invoiceNumber;
-
-/* =========================
-   فاتورة جديدة
-========================= */
-
 cart=[];
-
-document.getElementById('discountInput').value=0;
-
-document.getElementById('deliveryInput').value=0;
 
 updateInvoice();
 
 }
 
-document.getElementById('searchInput')
-.addEventListener('input',e=>{
+document.getElementById('searchInput').addEventListener('input',e=>{
 
 const value=e.target.value.trim();
 
 renderProducts(
 
-products.filter(p=>
-
-p.name.includes(value)
-
-)
+products.filter(p=>p.name.includes(value))
 
 );
 
