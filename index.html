@@ -426,7 +426,9 @@ let products=[
 ];
 
 let cart=[];
-let invoiceNumber=1;
+let invoiceNumber = Number(localStorage.getItem('invoiceNumber')) || 1;
+
+document.getElementById('invoiceNumber').innerText = invoiceNumber;
 let lastItemNumber=0;
 
 const productsGrid=document.getElementById('productsGrid');
@@ -1019,10 +1021,13 @@ printWindow.document.close();
 
 invoiceNumber++;
 
+localStorage.setItem('invoiceNumber', invoiceNumber);
+
+document.getElementById('invoiceNumber').innerText = invoiceNumber;
+
 cart=[];
 
 updateInvoice();
-
 }
 
 document.getElementById('searchInput').addEventListener('input',e=>{
