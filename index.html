@@ -770,12 +770,17 @@ if(confirm('مسح الفاتورة ؟')){
 
 cart=[];
 
+/* تصفير الخصم والديليفري */
+
+document.getElementById('discountInput').value=0;
+
+document.getElementById('deliveryInput').value=0;
+
 updateInvoice();
 
 }
 
 }
-
 function printInvoice(){
 
 if(cart.length===0){
