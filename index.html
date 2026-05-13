@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>برنامج الكاشير</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Cairo',sans-serif;background:#f4f7fb}
+.header{background:#0d6efd;color:#fff;padding:20px;text-align:center;font-size:28px;font-weight:bold;position:relative}
+.settings-btn{position:absolute;left:20px;top:20px;background:#fff;color:#0d6efd;border:none;padding:10px 15px;border-radius:10px;cursor:pointer;font-weight:bold}
+.container{display:grid;grid-template-columns:1fr 400px;gap:20px;padding:20px}
+.products-section,.invoice-section,#settingsPanel{background:#fff;border-radius:18px;padding:20px;box-shadow:0 4px 10px rgba(0,0,0,.08)}
+.section-title{font-size:24px;color:#0d6efd;margin-bottom:15px}
+.search-box,select,input{width:100%;padding:12px;border:1px solid #ccc;border-radius:10px;margin-bottom:12px}
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.product-btn{background:#0d6efd;color:#fff;border:none;border-radius:14px;padding:18px;cursor:pointer;font-size:17px;font-weight:bold}
+.product-btn:hover{background:#084298}
+.product-price{display:block;margin-top:8px;font-size:14px}
+.invoice-item{background:#f7faff;border-radius:12px;padding:12px;margin-bottom:10px}
+.item-top,.summary-row,.controls{display:flex;justify-content:space-between;align-items:center}
+.controls{margin-top:10px}
+.control-btn{border:none;padding:8px 12px;border-radius:8px;cursor:pointer;color:#fff}
+.plus-btn{background:#198754}
+.minus-btn{background:#ffc107;color:#000}
+.delete-btn{background:#dc3545}
+.summary{background:#eef4ff;padding:15px;border-radius:15px;margin-top:15px}
+.total{font-size:24px;font-weight:bold;color:#198754}
+.action-btn{border:none;padding:14px;border-radius:12px;cursor:pointer;font-size:17px;font-weight:bold;width:100%;margin-top:10px}
+.print-btn{background:#0d6efd;color:#fff}
+.clear-btn{background:#dc3545;color:#fff}
+.category-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:15px}
+.category-btn{background:#0d6efd;color:#fff;border:none;padding:10px 15px;border-radius:10px;cursor:pointer}
+.manage-item{background:#f7faff;padding:10px;border-radius:10px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+@media(max-width:900px){.container{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="header">
+برنامج الكاشير الاحترافي
+<button class="settings-btn" onclick="toggleSettings()">⚙ الإعدادات</button>
+</div>
+
+<div id="settingsPanel" style="display:none;margin:20px;">
+
+<div style="background:#eef4ff;padding:15px;border-radius:15px;margin-bottom:20px;">
+<h3 style="margin-bottom:10px">إضافة قسم جديد</h3>
+<input type="text" id="newCategoryName" placeholder="اسم القسم الجديد">
+<button class="action-btn print-btn" onclick="addCategory()">إضافة القسم</button>
+</div>
+
+<div style="background:#eef4ff;padding:15px;border-radius:15px;margin-bottom:20px;">
+<h3 style="margin-bottom:10px">إضافة صنف جديد</h3>
+<input type="text" id="newName" placeholder="اسم الصنف">
+<input type="number" id="newPrice" placeholder="السعر">
+<select id="newCategory"></select>
+<button class="action-btn print-btn" onclick="addNewProduct()">إضافة الصنف</button>
+</div>
+<h2 class="section-title">إدارة الأقسام</h2>
+<div id="categoriesContainer"></div>
+<input type="text" id="newCategoryName" placeholder="اسم القسم الجديد">
+<button class="action-btn print-btn" onclick="addCategory()">إضافة قسم</button>
+
+<hr style="margin:20px 0">
+
+<h2 class="section-title">إدارة الأصناف</h2>
+<div id="productsManagement"></div>
+</div>
+
+<div class="container">
+<div class="products-section">
+<h2 class="section-title">الأصناف</h2>
+
+<input type="text" id="searchInput" class="search-box" placeholder="بحث عن صنف">
+
+<div class="category-bar" id="categoryButtons"></div>
+
+
+
+<div class="products-grid" id="productsGrid"></div>
+</div>
+
+<div class="invoice-section">
+<h2 style="margin-bottom:15px;color:#0d6efd;">رقم الفاتورة: <span id="invoiceNumber">1</span></h2>
+<h2 class="section-title">الفاتورة</h2>
+<div id="invoiceItems">لا توجد أصناف</div>
+
+<div class="summary">
+<div class="summary-row">
+<span>طريقة الدفع</span>
+<select id="paymentMethod" style="width:120px">
+<option>نقدي</option>
+<option>فيزا</option>
+<option>ديليفري</option>
+</select>
+</div>
+
+<div class="summary-row">
+<span>عدد الأصناف</span>
+<span id="itemsCount">0</span>
+</div>
+
+<div class="summary-row">
+<span>الخصم %</span>
+<input type="number" id="discountInput" value="0" min="0" max="100" style="width:80px" oninput="updateInvoice()">
+</div>
+
+<div class="summary-row">
+<span>الديليفري</span>
+<input type="number" id="deliveryInput" value="0" min="0" style="width:100px" oninput="updateInvoice()">
+</div>
+
+<div class="summary-row">
+<span>قيمة الخصم</span>
+<span id="discountValue">0 جنيه</span>
+</div>
+
+<div class="summary-row total">
+<span>الإجمالي</span>
+<span id="totalPrice">0 جنيه</span>
+</div>
+</div>
+
+<button class="action-btn print-btn" onclick="printInvoice()">طباعة الفاتورة</button>
+<button class="action-btn clear-btn" onclick="clearInvoice()">مسح الفاتورة</button>
+</div>
+</div>
+
+<script>
+let categories=['مأكولات','مشروبات','بقالة'];
+
+let products=[
+{id:1,name:'بيبسي',price:20,category:'مشروبات'},
+{id:2,name:'شيبسي',price:15,category:'مأكولات'},
+{id:3,name:'أرز',price:50,category:'بقالة'}
+];
+
+let cart=[];
+let invoiceNumber=1;
+let lastItemNumber=0;
+let savedInvoices=[];
+
+const productsGrid=document.getElementById('productsGrid');
+const invoiceItems=document.getElementById('invoiceItems');
+
+function toggleSettings(){
+const panel=document.getElementById('settingsPanel');
+
+if(panel.style.display==='none' || panel.style.display===''){
+panel.style.display='block';
+renderCategories();
+renderProductsManagement();
+}else{
+panel.style.display='none';
+}
+}
+
+function renderCategories(){
+const container=document.getElementById('categoriesContainer');
+const categoryButtons=document.getElementById('categoryButtons');
+
+container.innerHTML='';
+categoryButtons.innerHTML='';
+
+const allBtn=document.createElement('button');
+allBtn.className='category-btn';
+allBtn.innerText='الكل';
+allBtn.onclick=()=>renderProducts(products);
+categoryButtons.appendChild(allBtn);
+
+categories.forEach(cat=>{
+const manage=document.createElement('div');
+manage.className='manage-item';
+manage.innerHTML=`
+<div>${cat}</div>
+<div style='display:flex;gap:5px'>
+<button class='control-btn minus-btn' onclick="editCategory('${cat}')">تعديل</button>
+<button class='control-btn delete-btn' onclick="deleteCategory('${cat}')">حذف</button>
+</div>`;
+container.appendChild(manage);
+
+const btn=document.createElement('button');
+btn.className='category-btn';
+btn.innerText=cat;
+btn.onclick=()=>filterCategory(cat);
+categoryButtons.appendChild(btn);
+});
+
+renderCategoryOptions();
+}
+
+function renderCategoryOptions(){
+const select=document.getElementById('newCategory');
+select.innerHTML='';
+categories.forEach(cat=>{
+const option=document.createElement('option');
+option.value=cat;
+option.innerText=cat;
+select.appendChild(option);
+});
+}
+
+function renderProducts(list=products){
+productsGrid.innerHTML='';
+list.forEach(product=>{
+const btn=document.createElement('button');
+btn.className='product-btn';
+btn.innerHTML=`${product.name}<span class='product-price'>${product.price} جنيه</span>`;
+btn.onclick=()=>addToCart(product.id);
+productsGrid.appendChild(btn);
+});
+renderProductsManagement();
+}
+
+function renderProductsManagement(){
+const container=document.getElementById('productsManagement');
+container.innerHTML='';
+
+products.forEach(product=>{
+const div=document.createElement('div');
+div.className='manage-item';
+div.innerHTML=`
+<div>
+<strong>${product.name}</strong><br>
+<small>${product.category} - ${product.price} جنيه</small>
+</div>
+<div>
+<button class='control-btn minus-btn' onclick='editProduct(${product.id})'>تعديل</button>
+<button class='control-btn delete-btn' onclick='deleteProduct(${product.id})'>حذف</button>
+</div>`;
+container.appendChild(div);
+});
+}
+
+function addCategory(){
+const input=document.getElementById('newCategoryName');
+const value=input.value.trim();
+if(!value)return;
+categories.push(value);
+input.value='';
+renderCategories();
+}
+
+function editCategory(oldName){
+const newName=prompt('اسم القسم الجديد',oldName);
+if(!newName)return;
+categories=categories.map(c=>c===oldName?newName:c);
+products.forEach(p=>{if(p.category===oldName)p.category=newName});
+renderCategories();
+renderProducts();
+}
+
+function deleteCategory(cat){
+if(!confirm('حذف القسم وكل أصنافه؟'))return;
+categories=categories.filter(c=>c!==cat);
+products=products.filter(p=>p.category!==cat);
+renderCategories();
+renderProducts();
+}
+
+function addNewProduct(){
+const name=document.getElementById('newName').value.trim();
+const price=document.getElementById('newPrice').value;
+const category=document.getElementById('newCategory').value;
+if(!name||!price)return alert('أدخل البيانات');
+products.push({id:Date.now(),name,price:Number(price),category});
+document.getElementById('newName').value='';
+document.getElementById('newPrice').value='';
+renderProducts();
+}
+
+function editProduct(id){
+const product=products.find(p=>p.id===id);
+const newName=prompt('اسم الصنف',product.name);
+const newPrice=prompt('السعر',product.price);
+if(!newName||!newPrice)return;
+product.name=newName;
+product.price=Number(newPrice);
+renderProducts();
+updateInvoice();
+}
+
+function deleteProduct(id){
+products=products.filter(p=>p.id!==id);
+cart=cart.filter(c=>c.id!==id);
+renderProducts();
+updateInvoice();
+}
+
+function filterCategory(category){
+renderProducts(products.filter(p=>p.category===category));
+}
+
+function addToCart(id){
+const existing=cart.find(i=>i.id===id);
+
+if(existing){
+existing.qty++;
+}else{
+const product=products.find(p=>p.id===id);
+lastItemNumber++;
+cart.push({...product,qty:1,lineNumber:lastItemNumber});
+}
+
+updateInvoice();
+}
+
+function increaseQty(id){
+const item=cart.find(i=>i.id===id);
+item.qty++;
+updateInvoice();
+}
+
+function decreaseQty(id){
+const item=cart.find(i=>i.id===id);
+if(item.qty>1)item.qty--;
+else removeItem(id);
+updateInvoice();
+}
+
+function removeItem(id){
+cart=cart.filter(i=>i.id!==id);
+updateInvoice();
+}
+
+function updateInvoice(){
+document.getElementById('invoiceNumber').innerText=invoiceNumber;
+invoiceItems.innerHTML='';
+if(cart.length===0){
+invoiceItems.innerHTML='لا توجد أصناف';
+document.getElementById('itemsCount').innerText='0';
+document.getElementById('totalPrice').innerText='0 جنيه';
+return;
+}
+
+let total=0;
+let count=0;
+
+cart.forEach(item=>{
+count+=item.qty;
+total+=item.price*item.qty;
+
+const div=document.createElement('div');
+div.className='invoice-item';
+div.innerHTML=`
+<div style='font-weight:bold;color:#0d6efd;margin-bottom:8px'>#${item.lineNumber}</div>
+<div class='item-top'>
+<div>${item.name}</div>
+<div>${item.price*item.qty} جنيه</div>
+</div>
+<div class='controls'>
+<div>
+<button class='control-btn plus-btn' onclick='increaseQty(${item.id})'>+</button>
+<button class='control-btn minus-btn' onclick='decreaseQty(${item.id})'>-</button>
+</div>
+<button class='control-btn delete-btn' onclick='removeItem(${item.id})'>حذف</button>
+</div>`;
+invoiceItems.appendChild(div);
+});
+
+const discount=Number(document.getElementById('discountInput').value)||0;
+const delivery=Number(document.getElementById('deliveryInput').value)||0;
+const discountValue=total*(discount/100);
+const finalTotal=total-discountValue+delivery;
+
+document.getElementById('itemsCount').innerText=count;
+document.getElementById('discountValue').innerText=discountValue.toFixed(2)+' جنيه';
+document.getElementById('totalPrice').innerText=finalTotal.toFixed(2)+' جنيه';
+}
+
+function clearInvoice(){
+if(confirm('هل تريد مسح الفاتورة الحالية؟')){
+cart=[];
+updateInvoice();
+}
+}
+
+function printInvoice(){
+if(cart.length===0){
+alert('لا توجد أصناف داخل الفاتورة');
+return;
+}
+
+const invoiceData={
+invoiceNumber:invoiceNumber,
+items:[...cart],
+total:document.getElementById('totalPrice').innerText,
+date:new Date().toLocaleString()
+};
+
+savedInvoices.push(invoiceData);
+
+window.print();
+
+invoiceNumber++;
+document.getElementById('invoiceNumber').innerText=invoiceNumber;
+
+cart=[];
+updateInvoice();
+}
+
+document.getElementById('searchInput').addEventListener('input',e=>{
+const value=e.target.value.trim();
+renderProducts(products.filter(p=>p.name.includes(value)));
+});
+
+renderCategories();
+renderProducts();
+updateInvoice();
+</script>
+
+</body>
+</html>
+
