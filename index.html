@@ -61,16 +61,23 @@ background:#0277bd;
 padding:15px;
 overflow:auto;
 
-/* مهم جداً */
 display:flex;
 flex-direction:column;
 height:100%;
 }
+
+/* ===== Header ثابت ===== */
+.invoice-header{
+position:sticky;
+top:0;
+z-index:10;
+}
+
+/* ===== عرض 5 أصناف فقط ثم Scroll ===== */
 #invoiceItems{
-flex:1;
+max-height: calc(5 * 55px);
 overflow-y:auto;
-max-height:calc(100vh - 320px);
-padding-right:5px;
+position:relative;
 }
 .section-title{
 color:#fff;
@@ -383,7 +390,9 @@ height:55vh;
 </div>
 
 <div id="invoiceItems"></div>
-
+<div id="scrollArrow" onclick="scrollInvoiceDown()">
+⬇ المزيد
+</div>
 <div class="summary">
 
 <div class="summary-row">
@@ -832,7 +841,7 @@ document.getElementById('deliveryInput').value=0;
 /* تحديث الفاتورة */
 
 updateInvoice();
-
+checkInvoiceScroll();
 }
 
 }
@@ -980,6 +989,17 @@ margin-top:10px;
 .invoice-header{
 font-size:16px;
 }
+#scrollArrow{
+text-align:center;
+background:#ffeb3b;
+color:#000;
+padding:6px;
+font-weight:bold;
+cursor:pointer;
+border-radius:6px;
+margin-top:5px;
+display:none;
+}
 </style>
 
 </head>
@@ -1112,6 +1132,18 @@ renderProducts();
 updateInvoice();
 
 </script>
+function checkInvoiceScroll(){
+const box=document.getElementById('invoiceItems');
 
+if(box.scrollHeight > box.clientHeight){
+document.getElementById('scrollArrow').style.display='block';
+}else{
+document.getElementById('scrollArrow').style.display='none';
+}
+}
+
+function scrollInvoiceDown(){
+document.getElementById('invoiceItems').scrollTop += 120;
+}
 </body>
 </html>
