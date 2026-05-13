@@ -430,7 +430,13 @@ height:55vh;
 فاتورة رقم :
 <span id="invoiceNumber">1</span>
 </div>
+<button class="action-btn print-btn" onclick="printInvoice()">
+طباعة الفاتورة
+</button>
 
+<button class="action-btn clear-btn" onclick="clearInvoice()">
+مسح الفاتورة
+</button>
 <div class="invoice-header">
 
 <div>الإجمالي</div>
@@ -469,13 +475,7 @@ height:55vh;
 
 </div>
 
-<button class="action-btn print-btn" onclick="printInvoice()">
-طباعة الفاتورة
-</button>
 
-<button class="action-btn clear-btn" onclick="clearInvoice()">
-مسح الفاتورة
-<button
 class="action-btn"
 style="background:#673ab7;color:#fff"
 onclick="showInvoices()">
