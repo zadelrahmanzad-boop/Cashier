@@ -6,6 +6,8 @@
 <title>برنامج الكاشير</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
 .products-grid::-webkit-scrollbar,
 #invoiceItems::-webkit-scrollbar{
 width:8px;
@@ -21,8 +23,6 @@ border-radius:10px;
 #invoiceItems::-webkit-scrollbar-track{
 background:rgba(255,255,255,.15);
 }
-<style>
-
 *{
 margin:0;
 padding:0;
@@ -444,7 +444,12 @@ height:55vh;
 
 <button class="action-btn clear-btn" onclick="clearInvoice()">
 مسح الفاتورة
+<button
+class="action-btn"
+style="background:#673ab7;color:#fff"
+onclick="showInvoices()">
 </button>
+عرض الفواتير المحفوظة
 
 </div>
 
@@ -505,6 +510,8 @@ let products=[
 ];
 
 let cart=[];
+let savedInvoices =
+JSON.parse(localStorage.getItem('savedInvoices')) || [];  
 let invoiceNumber = Number(localStorage.getItem('invoiceNumber')) || 1;
 
 document.getElementById('invoiceNumber').innerText = invoiceNumber;
@@ -921,7 +928,34 @@ const date=now.toLocaleDateString('ar-EG');
 const time=now.toLocaleTimeString('ar-EG');
 
 const qrText=`فاتورة رقم ${invoiceNumber}`;
+const invoiceData={
 
+invoiceNumber,
+
+date,
+
+time,
+
+items:[...cart],
+
+subtotal,
+
+discount,
+
+discountValue,
+
+delivery,
+
+finalTotal
+
+};
+
+savedInvoices.push(invoiceData);
+
+localStorage.setItem(
+'savedInvoices',
+JSON.stringify(savedInvoices)
+);
 const printWindow=window.open('','','width=400,height=700');
 
 printWindow.document.write(`
@@ -1152,9 +1186,45 @@ renderProducts();
 
 updateInvoice();
 
-</script>
+/* عرض الفواتير المحفوظة */
+
+function showInvoices(){
+
+if(savedInvoices.length===0){
+
+alert('لا توجد فواتير محفوظة');
+
+return;
 
 }
+
+let text='';
+
+savedInvoices.forEach(inv=>{
+
+text += `
+
+====================
+
+فاتورة رقم : ${inv.invoiceNumber}
+
+التاريخ : ${inv.date}
+
+الوقت : ${inv.time}
+
+الإجمالي : ${inv.finalTotal} جنيه
+
+====================
+
+`;
+
+});
+
+alert(text);
+
+}
+
+</script>
 
 
 </body>
