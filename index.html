@@ -60,9 +60,18 @@ overflow:auto;
 background:#0277bd;
 padding:15px;
 overflow:auto;
-width:100%;
-}
 
+/* مهم جداً */
+display:flex;
+flex-direction:column;
+height:100%;
+}
+#invoiceItems{
+flex:1;
+overflow-y:auto;
+max-height:calc(100vh - 320px);
+padding-right:5px;
+}
 .section-title{
 color:#fff;
 font-size:22px;
