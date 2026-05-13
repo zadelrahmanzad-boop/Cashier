@@ -768,13 +768,19 @@ function clearInvoice(){
 
 if(confirm('مسح الفاتورة ؟')){
 
+/* حذف الأصناف */
+
 cart=[];
 
-/* تصفير الخصم والديليفري */
+/* تصفير الخصم */
 
 document.getElementById('discountInput').value=0;
 
+/* تصفير الديليفري */
+
 document.getElementById('deliveryInput').value=0;
+
+/* تحديث الفاتورة */
 
 updateInvoice();
 
