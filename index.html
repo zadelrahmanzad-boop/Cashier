@@ -6,7 +6,21 @@
 <title>برنامج الكاشير</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+.products-grid::-webkit-scrollbar,
+#invoiceItems::-webkit-scrollbar{
+width:8px;
+}
 
+.products-grid::-webkit-scrollbar-thumb,
+#invoiceItems::-webkit-scrollbar-thumb{
+background:#ffeb3b;
+border-radius:10px;
+}
+
+.products-grid::-webkit-scrollbar-track,
+#invoiceItems::-webkit-scrollbar-track{
+background:rgba(255,255,255,.15);
+}
 <style>
 
 *{
@@ -125,21 +139,7 @@ max-height:calc(100vh - 220px);
 
 padding-right:5px;
 }
-  .products-grid::-webkit-scrollbar,
-#invoiceItems::-webkit-scrollbar{
-width:8px;
-}
 
-.products-grid::-webkit-scrollbar-thumb,
-#invoiceItems::-webkit-scrollbar-thumb{
-background:#ffeb3b;
-border-radius:10px;
-}
-
-.products-grid::-webkit-scrollbar-track,
-#invoiceItems::-webkit-scrollbar-track{
-background:rgba(255,255,255,.15);
-}
 .product-btn{
 background:#e5e5e5;
 border:none;
