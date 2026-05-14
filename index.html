@@ -1075,7 +1075,7 @@ display:none;
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 
-<body onload="window.print();window.close()">
+<body onload="window.print()">
 
 <div class="logo">
 BARON
@@ -1286,7 +1286,13 @@ document.getElementById('deliveryInput').value=0;
 updateInvoice();
 }
 
-document.getElementById('searchInput').addEventListener('input',e=>{
+const search = document.getElementById('searchInput');
+if(search){
+search.addEventListener('input', e=>{
+   const value = e.target.value.trim();
+   renderProducts(products.filter(p=>p.name.includes(value)));
+});
+}
 
 const value=e.target.value.trim();
 
