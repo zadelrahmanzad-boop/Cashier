@@ -7,7 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
 <script>
-emailjs.init("begj qnju wekn xtcx");
+emailjs.init("begjqnjuweknxtcx");
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -244,10 +244,7 @@ margin-left:auto;
 /* شكل احترافي */
 box-shadow:0 2px 8px rgba(0,0,0,.25);
 }
-<div class="summary-row">
-<span>zadelrahmanzad@gmail.com</span>
-<input type="email" id="customerEmail" placeholder="example@gmail.com">
-</div>
+
 .summary-row{
 display:flex;
 justify-content:space-between;
@@ -554,7 +551,9 @@ let savedInvoices =
 JSON.parse(localStorage.getItem('savedInvoices')) || [];  
 let invoiceNumber = Number(localStorage.getItem('invoiceNumber')) || 1;
 
-document.getElementById('invoiceNumber').innerText = invoiceNumber;
+document.addEventListener("DOMContentLoaded", function () {
+   // الكود
+});
 let lastItemNumber=0;
 
 const productsGrid=document.getElementById('productsGrid');
