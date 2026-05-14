@@ -4,7 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>برنامج الكاشير</title>
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
 
+<script>
+emailjs.init("begj qnju wekn xtcx");
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
@@ -240,7 +244,10 @@ margin-left:auto;
 /* شكل احترافي */
 box-shadow:0 2px 8px rgba(0,0,0,.25);
 }
-
+<div class="summary-row">
+<span>zadelrahmanzad@gmail.com</span>
+<input type="email" id="customerEmail" placeholder="example@gmail.com">
+</div>
 .summary-row{
 display:flex;
 justify-content:space-between;
@@ -437,6 +444,14 @@ height:55vh;
 <button class="action-btn clear-btn" onclick="clearInvoice()">
 مسح الفاتورة
 </button>
+  <button
+class="action-btn"
+style="background:#673ab7;color:#fff"
+onclick="showInvoices()">
+
+عرض الفواتير المحفوظة
+
+</button>
 <div class="invoice-header">
 
 <div>الإجمالي</div>
@@ -476,12 +491,6 @@ height:55vh;
 </div>
 
 
-class="action-btn"
-style="background:#673ab7;color:#fff"
-onclick="showInvoices()">
-</button>
-عرض الفواتير المحفوظة
-
 </div>
 
 </div>
@@ -509,7 +518,6 @@ let products=[
 {id:8,name:'قطعة بوست',price:59.00,category:'وجبات'},
 {id:9,name:'قطعة تندر',price:59.00,category:'وجبات'},
 {id:10,name:'مياه',price:10.00,category:'مشروبات'},
-{id:10,name:'مياه غازيه',price:20.00,category:'مشروبات'},
 {id:11,name:'تشكن بارو',price:165.00,category:'تشكن برجر'},
 {id:12,name:'تشكن رانش',price:165.00,category:'تشكن برجر'},
 {id:13,name:'سموكى تشكن',price:186.00,category:'تشكن برجر'},
@@ -537,6 +545,7 @@ let products=[
 {id:35,name:'مشروم برجر',price:225.00,category:'بيف برجر'},
 {id:36,name:'بيكون برجر',price:235.00,category:'بيف برجر'},
 {id:37,name:'سماش برجر',price:209.00,category:'بيف برجر'},
+{id:38,name:'مياه غازيه',price:20.00,category:'مشروبات'},
 
 ];
 
@@ -1087,7 +1096,7 @@ margin-top:5px;
 display:none;
 }
 </style>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 
 <body onload="window.print();window.close()">
@@ -1187,7 +1196,105 @@ ${itemsHTML}
 `);
 
 printWindow.document.close();
+/* إنشاء PDF وحفظه تلقائياً */
 
+const { jsPDF } = window.jspdf;
+
+const pdf = new jsPDF({
+orientation:'p',
+unit:'mm',
+format:[80,200]
+});
+
+let y = 10;
+
+pdf.setFontSize(16);
+pdf.text('BARON',40,y,{align:'center'});
+
+y += 10;
+
+pdf.setFontSize(12);
+pdf.text(`فاتورة رقم : ${invoiceNumber}`,40,y,{align:'center'});
+
+y += 7;
+
+pdf.text(`${date} - ${time}`,40,y,{align:'center'});
+
+y += 10;
+
+pdf.setFontSize(10);
+
+cart.forEach(item=>{
+
+pdf.text(
+`${item.name} | ${item.qty} × ${item.price}`,
+5,
+y
+);
+
+y += 6;
+
+pdf.text(
+`الإجمالي : ${item.price * item.qty}`,
+5,
+y
+);
+
+y += 8;
+
+});
+
+pdf.line(5,y,75,y);
+
+y += 8;
+
+pdf.text(`المجموع : ${subtotal}`,5,y);
+y += 6;
+
+pdf.text(`الخصم : ${discountValue}`,5,y);
+y += 6;
+
+pdf.text(`الديليفري : ${delivery}`,5,y);
+y += 8;
+
+pdf.setFontSize(14);
+pdf.text(`الإجمالي النهائي : ${finalTotal} جنيه`,5,y);
+
+y += 10;
+
+pdf.text(`رقم الفاتورة : ${invoiceNumber}`,5,y);
+
+/* اسم ملف الفاتورة */
+
+const fileName = `Invoice-${invoiceNumber}.pdf`;
+
+/* حفظ تلقائي */
+
+pdf.save(fileName);
+const customerEmail =
+document.getElementById('customerEmail').value;
+
+if(customerEmail){
+
+emailjs.send(
+"YOUR_SERVICE_ID",
+"YOUR_TEMPLATE_ID",
+{
+invoice_number: invoiceNumber,
+invoice_total: finalTotal,
+customer_email: customerEmail,
+invoice_date: date,
+invoice_time: time
+}
+)
+.then(()=>{
+console.log('تم إرسال الفاتورة');
+})
+.catch((err)=>{
+console.log(err);
+});
+
+}
 invoiceNumber++;
 
 localStorage.setItem('invoiceNumber', invoiceNumber);
@@ -1195,6 +1302,10 @@ localStorage.setItem('invoiceNumber', invoiceNumber);
 document.getElementById('invoiceNumber').innerText = invoiceNumber;
 
 cart=[];
+
+document.getElementById('discountInput').value=0;
+
+document.getElementById('deliveryInput').value=0;
 
 updateInvoice();
 }
